@@ -5,10 +5,14 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
+import tornado.log as tlog
 from os import path
+from logger import logger
 
 DEFAULT_ADDRESS = '127.0.0.1'
 DEFAULT_PORT = 8888
+DEBUG = True
+AUTOLOAD = True
 
 handlers = [
 ]
@@ -17,11 +21,15 @@ def run(address, port):
     settings = {
         'static_path': path.join(path.dirname(\
                        path.abspath(__file__)), 'static'),
+        'debug': DEBUG,
+        'autoload': AUTOLOAD,
     }
+
     app = tornado.web.Application(handlers=handlers, **settings)
     http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
+    tlog.enable_pretty_logging()
     http_server.listen(port)
-    print "server start at %s:%s"%(address, port)
+    logger.info("server start at %s:%s"%(address, port))
     tornado.ioloop.IOLoop.current().start()
 
 
